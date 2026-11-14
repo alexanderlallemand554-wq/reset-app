@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#203d32">
+  <meta name="description" content="RESET — kleine dagelijkse stappen naar meer rust, focus en verbinding.">
+  <title>RESET</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <style>
+    :root{--forest:#203d32;--moss:#78927a;--sage:#dce7d8;--cream:#f6f5ed;--paper:#fffef9;--ink:#24342d;--muted:#718078;--line:#e4e8df;--gold:#c5a66b}
+    *{box-sizing:border-box} body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    header{background:var(--forest);color:white;padding:26px 20px 24px;border-radius:0 0 28px 28px}
+    .top{display:flex;justify-content:space-between;align-items:center;max-width:760px;margin:auto}
+    .brand{font-size:13px;letter-spacing:4px;font-weight:700;opacity:.8}.date{font-size:12px;opacity:.75}
+    h1{font-size:34px;letter-spacing:2px;margin:20px 0 4px}.sub{font-size:14px;opacity:.8;margin:0}
+    main{max-width:760px;margin:0 auto;padding:18px 16px 100px}
+    .quote{background:#e8eee3;border-radius:18px;padding:16px 18px;margin:0 0 18px;color:#405a49;font-size:14px;line-height:1.5}
+    .section-head{display:flex;justify-content:space-between;align-items:center;margin:22px 2px 10px}
+    h2{font-size:18px;margin:0;color:var(--forest)} .small{font-size:12px;color:var(--muted)}
+    .card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 3px 12px #233c3010}
+    .habit{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.habit:last-child{border:0;padding-bottom:0}
+    .habit input{appearance:none;width:23px;height:23px;border:1.7px solid #9bad9c;border-radius:8px;flex:none;margin:0}
+    .habit input:checked{background:var(--forest);border-color:var(--forest)}
+    .habit input:checked:after{content:"✓";display:block;color:white;text-align:center;font-weight:700;line-height:20px}
+    .habit label{font-size:14px;line-height:1.35;flex:1}.habit input:checked+label{color:#89958b;text-decoration:line-through}
+    .progressline{height:8px;background:#e9eee7;border-radius:10px;overflow:hidden;margin-top:12px}.progressline>div{height:100%;width:0;background:var(--moss);border-radius:10px;transition:width .2s}
+    .metric{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin:12px 0 6px}
+    input[type=range]{width:100%;accent-color:var(--forest)}textarea,input[type=text]{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit;background:#fffefb;color:var(--ink);resize:vertical}
+    textarea{min-height:90px} .btn{border:0;border-radius:12px;padding:12px 16px;background:var(--forest);color:white;font-weight:650;font-size:14px;cursor:pointer}.btn.secondary{background:var(--sage);color:var(--forest)}
+    .tabs{position:fixed;bottom:0;left:0;right:0;background:#fffef9f2;backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:5;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+    .tab{flex:1;max-width:180px;border:0;background:none;color:#829087;font-size:11px;padding:7px 2px;cursor:pointer}.tab span{display:block;font-size:19px;margin-bottom:3px}.tab.active{color:var(--forest);font-weight:700}
+    .page{display:none}.page.active{display:block}.statgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:var(--sage);border-radius:15px;padding:14px}.stat strong{display:block;font-size:24px;color:var(--forest)}.stat small{color:#58705e}
+    .muted{font-size:12px;color:var(--muted);line-height:1.5}.verse{font-family:Georgia,serif;font-size:19px;line-height:1.5;color:var(--forest)}
+    .entry{white-space:pre-wrap;font-size:13px;line-height:1.5;background:#f7f8f2;border-radius:12px;padding:12px;margin-top:10px}
+    @media(min-width:600px){header{margin:18px auto 0;max-width:800px;border-radius:28px}main{padding-top:22px}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="top"><div class="brand">RESET</div><div class="date" id="todayDate"></div></div>
+  <h1>Small steps. Real change.</h1>
+  <p class="sub">Je hoeft niet perfect te zijn. Begin gewoon opnieuw.</p>
+</header>
+<main>
+  <section class="page active" id="today">
+    <div class="quote">“Je hoeft vandaag niet je hele leven te veranderen. Kies gewoon de volgende goede stap.”</div>
+    <div class="section-head"><h2>Vandaag</h2><span class="small" id="dayLabel"></span></div>
+    <div class="card">
+      <div class="section-head" style="margin:0"><h2>Mijn dagelijkse gewoontes</h2><span class="small" id="count">0/7</span></div>
+      <div id="habits"></div>
+      <div class="progressline"><div id="bar"></div></div>
+    </div>
+    <div class="card">
+      <h2>Schermtijd</h2>
+      <div class="metric"><span>Mijn schermtijd vandaag</span><strong><span id="hours">4</span> uur</strong></div>
+      <input id="screen" type="range" min="0" max="12" step=".5" value="4">
+      <div class="metric"><span>Mijn doel</span><strong>max. 4 uur</strong></div>
+      <p class="muted" id="screenNote">Kleine keuzes maken verschil.</p>
+    </div>
+    <div class="card">
+      <h2>Wat doe ik als ik een drang voel?</h2>
+      <p class="muted">Sta even stil. Je hoeft niet automatisch op een impuls te reageren.</p>
+      <textarea id="urge" placeholder="Bijvoorbeeld: telefoon wegleggen, wandelen, iemand sturen, bidden..."></textarea>
+      <button class="btn secondary" id="saveUrge" style="margin-top:10px">Bewaar mijn plan</button>
+    </div>
+  </section>
+
+  <section class="page" id="progress">
+    <div class="section-head"><h2>Mijn vooruitgang</h2><span class="small">Deze week</span></div>
+    <div class="statgrid">
+      <div class="stat"><strong id="streak">0</strong><small>gewoontes vandaag</small></div>
+      <div class="stat"><strong id="avgScreen">—</strong><small>schermtijd vandaag</small></div>
+    </div>
+    <div class="card" style="margin-top:12px"><h2>Dagelijkse geschiedenis</h2><div id="history" class="muted" style="margin-top:12px">Vink je gewoontes af om je voortgang te zien.</div></div>
+    <p class="muted">RESET bewaart je gegevens op dit toestel in deze browser. Wis je browsergegevens niet als je je voortgang wilt behouden.</p>
+  </section>
+
+  <section class="page" id="faith">
+    <div class="section-head"><h2>Faith &amp; rust</h2></div>
+    <div class="card">
+      <div class="verse">“Ik ben tegen alles bestand door Hem die mij kracht geeft.”</div>
+      <p class="muted">Filippenzen 4:13</p>
+    </div>
+    <div class="card">
+      <h2>Mijn gebed</h2>
+      <p class="muted">Schrijf eerlijk op wat er in je omgaat. Je hoeft hier niets te verbergen.</p>
+      <textarea id="prayer" placeholder="God, vandaag wil ik..."></textarea>
+      <button class="btn" id="savePrayer" style="margin-top:10px">Bewaar gebed</button>
+    </div>
+  </section>
+
+  <section class="page" id="journal">
+    <div class="section-head"><h2>Dagboek</h2></div>
+    <div class="card">
+      <h2>Even reflecteren</h2>
+      <p class="muted">Wat ging vandaag goed? Wat wil je morgen anders aanpakken? Waar ben je dankbaar voor?</p>
+      <textarea id="journalText" placeholder="Schrijf je gedachten neer..."></textarea>
+      <button class="btn" id="saveJournal" style="margin-top:10px">Bewaar dagboeknotitie</button>
+      <div id="savedJournal"></div>
+    </div>
+  </section>
+</main>
+<nav class="tabs">
+  <button class="tab active" data-page="today"><span>☀️</span>Vandaag</button>
+  <button class="tab" data-page="progress"><span>🌱</span>Progress</button>
+  <button class="tab" data-page="faith"><span>✦</span>Faith</button>
+  <button class="tab" data-page="journal"><span>📖</span>Dagboek</button>
+</nav>
+<script>
+const habitList=[
+  "Opstaan zonder meteen te scrollen",
+  "Geen porno — bewust kiezen voor wat goed voelt",
+  "Naar buiten gaan of bewegen",
+  "Werken aan mijn studie of project",
+  "Tijd nemen voor God",
+  "Contact met mijn vriendin, familie of vrienden",
+  "Mijn telefoon bewust gebruiken"
+];
+const key='reset-app-v1';
+const today=new Date().toISOString().slice(0,10);
+let data=JSON.parse(localStorage.getItem(key)||'{}');
+data.days=data.days||{};
+data.days[today]=data.days[today]||{habits:[],screen:4};
+const day=data.days[today];
+document.getElementById('todayDate').textContent=new Date().toLocaleDateString('nl-BE',{weekday:'long',day:'numeric',month:'long'});
+document.getElementById('dayLabel').textContent=new Date().toLocaleDateString('nl-BE',{day:'numeric',month:'short'});
+function persist(){localStorage.setItem(key,JSON.stringify(data));}
+function renderHabits(){
+ const host=document.getElementById('habits');host.innerHTML='';
+ habitList.forEach((h,i)=>{const row=document.createElement('div');row.className='habit';const cb=document.createElement('input');cb.type='checkbox';cb.id='h'+i;cb.checked=day.habits.includes(i);const label=document.createElement('label');label.htmlFor=cb.id;label.textContent=h;cb.addEventListener('change',()=>{day.habits=cb.checked?[...new Set([...day.habits,i])]:day.habits.filter(x=>x!==i);persist();updateProgress();});row.append(cb,label);host.append(row);});
+ updateProgress();
+}
+function updateProgress(){const n=day.habits.length;document.getElementById('count').textContent=n+'/7';document.getElementById('bar').style.width=(n/7*100)+'%';document.getElementById('streak').textContent=n;document.getElementById('avgScreen').textContent=day.screen+' u';}
+const screen=document.getElementById('screen');screen.value=day.screen;document.getElementById('hours').textContent=day.screen;
+screen.addEventListener('input',()=>{day.screen=Number(screen.value);document.getElementById('hours').textContent=day.screen;document.getElementById('screenNote').textContent=day.screen<=4?'Mooi: je zit op of onder je doel.':'Je zit boven je doel. Geen paniek — maak nu één bewuste keuze.';persist();updateProgress();});
+document.getElementById('urge').value=data.urge||'';
+document.getElementById('saveUrge').onclick=()=>{data.urge=document.getElementById('urge').value;persist();alert('Je plan is bewaard.');};
+document.getElementById('prayer').value=data.prayer||'';
+document.getElementById('savePrayer').onclick=()=>{data.prayer=document.getElementById('prayer').value;persist();alert('Je gebed is bewaard.');};
+document.getElementById('journalText').value=(data.journals||{})[today]||'';
+document.getElementById('saveJournal').onclick=()=>{data.journals=data.journals||{};data.journals[today]=document.getElementById('journalText').value;persist();renderJournal();alert('Je dagboeknotitie is bewaard.');};
+function renderJournal(){const t=(data.journals||{})[today];document.getElementById('savedJournal').innerHTML=t?'<div class="entry"></div>':'';if(t)document.querySelector('.entry').textContent=t;}
+function renderHistory(){const entries=Object.entries(data.days).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,7);document.getElementById('history').innerHTML=entries.length?entries.map(([d,v])=>`${new Date(d+'T12:00:00').toLocaleDateString('nl-BE',{weekday:'short',day:'numeric',month:'short'})}: ${v.habits.length}/7 gewoontes · ${v.screen}u schermtijd`).join('<br>'):'Je voortgang verschijnt hier.';}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===b.dataset.page));if(b.dataset.page==='progress')renderHistory();}));
+renderHabits();renderJournal();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
+</script>
+</body></html>
